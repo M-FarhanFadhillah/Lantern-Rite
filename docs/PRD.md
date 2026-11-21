@@ -644,6 +644,7 @@ The M0 gate loads the generated fish from its ID in `AssetIds.luau`, spawned by 
 
 - Each milestone becomes GitHub Issues, one per system or asset batch, linked to the PRD section it implements.
 - A milestone is done only when its gate passes in a real playtest on PC and a phone.
+- Exception: M0 closed on PC only (see [[decisions/2026-11-22 M0 closed without a phone check]]).
 - If scope must shrink, cut a zone (Coldwake or Ember Vents) before cutting reel, cargo or panic polish.
 
 ## 17. Success metrics, risks and open questions

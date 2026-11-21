@@ -1,6 +1,6 @@
 # Lantern Tide — Roblox fishing game
 
-Read docs/PRD.md before planning any feature. Current milestone: **M0 Foundations** (PRD §16).
+Read docs/PRD.md before planning any feature. Current milestone: **M1 Vertical slice** (PRD §16). M0 Foundations closed 2026-11-22.
 Solo developer, experienced in Luau. Platforms: PC and mobile.
 
 ## Stack

@@ -9,4 +9,4 @@ This Obsidian vault is the design source of truth for the game. Claude Code read
 - [[decisions/README|Decisions]] — design changes, with why
 - [[lore/README|Lore]] — story, NPCs, fish lore, bottle messages
 
-**Current milestone:** M0 Foundations (see [[PRD#16. Milestones and roadmap]])
+**Current milestone:** M1 Vertical slice (see [[PRD#16. Milestones and roadmap]]). M0 Foundations closed 2026-11-22.

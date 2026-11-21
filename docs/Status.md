@@ -2,9 +2,9 @@
 
 Back to [[Home]]. Claude Code updates this note after every completed task.
 
-**Last updated:** 2026-11-22 05:55
-**Current milestone:** M0 Foundations ([[PRD#16. Milestones and roadmap]]): every task done and the gate passed on PC; the phone check is the user's call (see below)
-**Current plan:** [[plans/2026-11-21 M0 Foundations]]
+**Last updated:** 2026-11-22 06:05
+**Current milestone:** M1 Vertical slice ([[PRD#16. Milestones and roadmap]]). M0 Foundations closed 2026-11-22: gate passed on PC, phone check skipped by the user ([[decisions/2026-11-22 M0 closed without a phone check]])
+**Current plan:** none yet for M1. M0's was [[plans/2026-11-21 M0 Foundations]]
 
 ## Done
 - PRD written and saved as [[PRD]]
@@ -25,12 +25,13 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 ## In progress
 - Nothing.
 
+- **M0 closed** (2026-11-22). The user skipped the phone check.
+
 ## Next step
-- Decide whether M0 needs a phone check (PRD §16: "a milestone is done only when its gate passes in a real playtest on PC and a phone"). That needs the place published and joined from a phone.
-- Then M1, the vertical slice (Harbor, 12 fish, track-bar reel, sell, save, cargo grid): brainstorm and plan first, one system per session.
+- Start M1, the vertical slice (PRD §16: Driftwood Harbor, 12 fish, track-bar reel, sell, save, cargo grid; gate: 5 testers enjoy the first 10 minutes on PC and a phone). Brainstorm and plan first: split M1 into systems, one per session, in build order; propose one GitHub Issue per system (PRD §16); save the plan to `docs/plans/`. Build nothing until the user approves the plan.
 
 ## Open questions / blockers
-- Phone check for the M0 gate (above).
+- 4 local commits aren't on GitHub yet: auto mode blocks Claude's `git push`, so run `git push` yourself.
 - Studio shows two Rojo buttons on the Plugins toolbar (the one `rojo plugin install` added and another). Keep one so it's always clear which is connected.
 - Unused asset 85973780481219 (the first, backwards fish upload) can be archived in the Creator Dashboard.
 - The local `figma` MCP server is unauthenticated; remove it (`claude mcp remove figma`) or sign it in with /mcp.
