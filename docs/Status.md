@@ -2,7 +2,7 @@
 
 Back to [[Home]]. Claude Code updates this note after every completed task.
 
-**Last updated:** 2026-11-22 06:05
+**Last updated:** 2026-11-22 06:32
 **Current milestone:** M1 Vertical slice ([[PRD#16. Milestones and roadmap]]). M0 Foundations closed 2026-11-22: gate passed on PC, phone check skipped by the user ([[decisions/2026-11-22 M0 closed without a phone check]])
 **Current plan:** [[plans/2026-11-22 M1 Vertical slice]] (approved 2026-11-22). M0's was [[plans/2026-11-21 M0 Foundations]]
 
@@ -25,10 +25,13 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 ## In progress
 - M1 brainstorm (started 2026-11-22 06:10 in session [[sessions/2026-11-21 2137 M0 foundations]]). Decided: M1 includes the free Rowboat with simple piloting ([[decisions/2026-11-22 M1 includes the Rowboat]]). Build order decided: playable loop first. Design [[plans/2026-11-22 M1 Vertical slice]] is builder-checked, updated (13 sessions) and **approved by the user**. **Session 1 done (2026-11-22):** the 12 approved Harbor species ([[lore/Driftwood Harbor fish]]), zone, spot, rod, bait and rarity data, and a tested CatchRoll (19/19 Jest; odds verified with 1,000 rolls per spot). Plan: [[plans/2026-11-22 M1 S1 Fish data and CatchRoll]].
 
+- **M1 session 2: the fishing loop** (cast, bite, hook). Design approved by the user; plan [[plans/2026-11-22 M1 S2 Fishing loop]].
+  - Task 1 done: `net.zap`, generated into `src/server/Net.luau` and `src/client/Net.luau`.
+  - Next: Task 2 (FishingState, test first), Task 3 (FishingService, controllers, placeholder harbor), Task 4 (playtest).
 - **M0 closed** (2026-11-22). The user skipped the phone check.
 
 ## Next step
-- M1 **session 2: the fishing loop** ([[plans/2026-11-22 M1 Vertical slice]]): `net.zap` (cast, bite, hook, reel result), FishingService (server state, timing, hook window, rate limits, CatchRoll), and FishingController with InputController on the Input Action System, plus a placeholder bobber and line. Remove `SmokeTestService` once a real catch works. Brainstorm and plan first, in a fresh session.
+- M1 session 2, **Task 2**: `FishingTuning` and the pure `FishingState`, test first in Studio Edit mode, per [[plans/2026-11-22 M1 S2 Fishing loop]]. Then Task 3 (FishingService, InputController, FishingController, placeholder harbor; delete `SmokeTestService`) and Task 4 (playtest).
 
 ## Open questions / blockers
 - 4 local commits aren't on GitHub yet: auto mode blocks Claude's `git push`, so run `git push` yourself.
