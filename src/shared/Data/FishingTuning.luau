@@ -9,4 +9,10 @@ return table.freeze({
 	hookWindowStep = 0.04, -- less time per difficulty step above 1
 	hookWindowMin = 0.45,
 	latencyAllowance = 0.35, -- added to every hook window for the round trip to the server
+	chargeTime = 1.2, -- holding Fish this long reaches full power
+	maxCastDrop = 60, -- the water may lie this far below the caster
+	-- M1 stand-ins until DataService gives each player a rod (session 5) and M2 adds zones.
+	zoneId = "DriftwoodHarbor",
+	rodId = "Driftwood",
+	defaultSpot = "open", -- wherever no FishingSpot zone covers the landing point
 })

@@ -10,6 +10,7 @@ local FishingTuning = require(Data.FishingTuning)
 
 export type Phase = "Idle" | "Waiting" | "Biting"
 export type HookResult = "Hooked" | "Missed" | "Rejected"
+export type Refusal = "Busy" | "Cooldown"
 
 export type State = {
 	phase: Phase,
@@ -39,7 +40,7 @@ function FishingState.hookWindow(difficulty: number): number
 	)
 end
 
-function FishingState.canCast(state: State, now: number): (boolean, string?)
+function FishingState.canCast(state: State, now: number): (boolean, Refusal?)
 	if state.phase ~= "Idle" then
 		return false, "Busy"
 	elseif now < state.readyAt then
@@ -48,8 +49,8 @@ function FishingState.canCast(state: State, now: number): (boolean, string?)
 	return true, nil
 end
 
-function FishingState.cast(state: State, now: number, token: string, catch: CatchRoll.Catch): (boolean, string?)
-	local ok, reason = FishingState.canCast(state, now)
+function FishingState.cast(state: State, now: number, token: string, catch: CatchRoll.Catch): (boolean, Refusal?)
+	local ok: boolean, reason: Refusal? = FishingState.canCast(state, now)
 	if not ok then
 		return false, reason
 	end

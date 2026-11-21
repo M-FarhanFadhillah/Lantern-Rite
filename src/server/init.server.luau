@@ -8,7 +8,7 @@ local Loader = require(ReplicatedStorage.Shared.Modules.Loader)
 local Services = script.Services
 
 local services: { Loader.Entry } = {
-	{ name = "SmokeTestService", module = require(Services.SmokeTestService) },
+	{ name = "FishingService", module = require(Services.FishingService) },
 }
 
 Loader.load(services)
