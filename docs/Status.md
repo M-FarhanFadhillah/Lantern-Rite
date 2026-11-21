@@ -23,7 +23,7 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 - Task 10: ponytail review of M0; all four findings fixed (facing guard, dead preview light, safer type-definition download, unused export retry)
 
 ## In progress
-- Nothing.
+- M1 brainstorm (started 2026-11-22 06:10 in session [[sessions/2026-11-21 2137 M0 foundations]]). Waiting on the user: does M1 include the Rowboat with simple piloting, or fishing from the dock only? The PRD's milestones never schedule boats.
 
 - **M0 closed** (2026-11-22). The user skipped the phone check.
 
