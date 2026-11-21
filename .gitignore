@@ -1,0 +1,34 @@
+# Secrets
+.env
+*.env
+.env.*
+!.env.example
+
+# Rojo / Wally
+Packages/
+ServerPackages/
+DevPackages/
+sourcemap.json
+*.rbxl.lock
+*.rbxlx.lock
+build/
+
+# Art
+art/blender/exports/
+*.blend1
+*.blend@
+
+# Python (Blender generators, tools)
+__pycache__/
+
+# Claude desktop app outputs (starter zip)
+Claude outputs/
+
+# Obsidian (keep the vault, ignore personal layout)
+docs/.obsidian/workspace*.json
+docs/.obsidian/cache
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.claude/settings.local.json
