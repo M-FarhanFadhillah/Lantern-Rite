@@ -16,10 +16,12 @@ Headless (the Steam build of Blender is not on PATH):
 
 Relative paths resolve from the repo root, found from this file's location, never from the cwd.
 
-Frame shared by every fish: length along Y with the head toward +Y, up +Z, symmetric across X.
-1 Blender unit = 1 stud and the export applies no scale factor. The glTF exporter's default Y-up
-conversion maps Blender +Y (head) to glTF -Z, which is Roblox's LookVector, and Blender +Z
-(dorsal fin) to glTF and Roblox +Y.
+Frame shared by every fish: length along Y with the head toward -Y (Blender's front), up +Z,
+symmetric across X. 1 Blender unit = 1 stud and the export applies no scale factor. The glTF
+exporter's default Y-up conversion maps Blender -Y (head) to glTF +Z, glTF's front, and Roblox's
+importer turns glTF's front into its LookVector (-Z), so the head faces the MeshPart's LookVector.
+Blender +Z (dorsal fin) becomes glTF and Roblox +Y. The M0 smoke test confirmed this in Studio: an
+earlier head-toward-+Y build imported facing +Z, backwards.
 
 The build runs in its own scene, "FishGen", created or cleared on every run. Other scenes are never
 touched, the .blend is never saved, and in the live UI the previously active scene comes back at
@@ -71,7 +73,7 @@ TRI_MIN, TRI_MAX = 300, 1500  # PRD section 13 budget for one fish
 UV_INSET = 0.25  # each face's UVs fill this fraction of its swatch cell, centred in the cell
 UV_CORNERS = ((-1.0, -1.0), (1.0, -1.0), (0.0, 1.0))  # small triangle inside that square
 PREVIEW_SIZE = 512
-PREVIEW_VIEW_DIR = (1.0, 0.55, 0.35)  # target -> camera: right flank, a little from the front, above
+PREVIEW_VIEW_DIR = (1.0, -0.55, 0.35)  # target -> camera: a flank, a little from the front (-Y), above
 PREVIEW_LENS_MM = 50.0
 PREVIEW_MARGIN = 1.12
 PREVIEW_BACKGROUND = (0.32, 0.42, 0.47)  # linear RGB, a muted sea grey-blue
@@ -480,8 +482,17 @@ def build_parts(spec):
     return parts, ring_s
 
 
+def _head_to_front(v):
+    """Turn 180 degrees about Z, so the head (built toward +Y) faces -Y, Blender's and glTF's front.
+
+    A rotation, not a mirror: negating X as well as Y keeps the face winding and normals intact.
+    """
+    return Vector((-v.x, -v.y, v.z))
+
+
 def assemble(parts, length):
-    """Scale design units to studs (total Y extent = length) and put the origin at the body's centre."""
+    """Scale design units to studs (total Y extent = length), put the origin at the body's centre,
+    and turn the fish so its head faces -Y."""
     every = [v for p in parts for v in p.verts]
     lo, hi = _bbox(every)
     scale = length / (hi.y - lo.y)
@@ -490,7 +501,7 @@ def assemble(parts, length):
     verts, faces, groups, tris = [], [], [], {}
     for p in parts:
         base = len(verts)
-        verts += [v * scale - center for v in p.verts]
+        verts += [_head_to_front(v * scale - center) for v in p.verts]
         for (a, b, c), g in p.faces:
             faces.append((base + a, base + b, base + c))
             groups.append(g)
@@ -655,7 +666,7 @@ def _export_glb(scene, obj, path: Path):
         "use_visible": False,
         "use_renderable": False,
         "use_active_collection": False,
-        "export_yup": True,  # default Y-up conversion: Blender +Y -> glTF -Z, +Z -> +Y
+        "export_yup": True,  # default Y-up conversion: Blender -Y (head) -> glTF +Z (front), +Z -> +Y
         "export_apply": True,
         "export_texcoords": True,
         "export_normals": True,
@@ -786,7 +797,7 @@ def build(spec_path, out_dir=None, preview_path=None) -> dict:
         "bounds_min": [round(c, 4) for c in lo],
         "bounds_max": [round(c, 4) for c in hi],
         "origin": "centre of the body's bounding box",
-        "orientation": "head toward +Y, dorsal fin toward +Z, symmetric across X",
+        "orientation": "head toward -Y (glTF +Z, Roblox LookVector -Z), dorsal fin toward +Z, symmetric across X",
         "swatches": {g: colors[g] for g in sorted(set(groups))},
         "scene": SCENE_NAME,
         "files": {"glb": str(glb_path), "atlas": str(atlas_path), "preview": str(preview)},

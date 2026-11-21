@@ -8,7 +8,11 @@ export type AssetIds = {
 }
 
 local AssetIds: AssetIds = {
-	Fish = table.freeze({}),
+	Fish = table.freeze({
+		-- art/blender/specs/fish/kelp_snapper.json, uploaded 2026-11-22 (M0 test fish). Replaces
+		-- 85973780481219, which faced backwards (head +Z); that asset is unused.
+		FSH_KelpSnapper = 87926189441992,
+	}),
 }
 
 return table.freeze(AssetIds)
