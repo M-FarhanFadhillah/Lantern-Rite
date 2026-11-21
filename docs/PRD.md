@@ -548,7 +548,7 @@ tests/               Jest specs (*.spec) and jest.config.luau
 
 **Catch flow and anti-cheat**
 
-1. The client sends `RequestCast(power)`. The server records the time, position and equipped gear.
+1. The client sends `RequestCast(power, aim)`. The server records the time, position and equipped gear, and lands the cast along the aim's horizontal direction.
 2. The server rolls bite time, species, weight and mutation with `CatchRoll`, using the zone table, gear, bait, boosts, time and weather.
 3. At bite time the server sends `Bite(fishToken, variant, tuning, seed)`.
 4. The client runs the minigame and sends `ReelResult(fishToken, outcome, inputLog)`.

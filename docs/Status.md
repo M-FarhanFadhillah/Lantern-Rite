@@ -2,7 +2,7 @@
 
 Back to [[Home]]. Claude Code updates this note after every completed task.
 
-**Last updated:** 2026-11-22 06:46
+**Last updated:** 2026-11-22 06:52
 **Current milestone:** M1 Vertical slice ([[PRD#16. Milestones and roadmap]]). M0 Foundations closed 2026-11-22: gate passed on PC, phone check skipped by the user ([[decisions/2026-11-22 M0 closed without a phone check]])
 **Current plan:** [[plans/2026-11-22 M1 Vertical slice]] (approved 2026-11-22). M0's was [[plans/2026-11-21 M0 Foundations]]
 
@@ -34,20 +34,16 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
     - `FishingController`: placeholder meter, bobber, line, "!" and result text.
     - `SmokeTestService` deleted.
     - Placeholder harbor in `Workspace.PlaceholderHarbor` at x = 1300, saved as place version 18.
-  - Next: Task 4 (playtest).
+  - Task 4 done: playtest passed on PC ([[playtests/2026-11-22 M1 S2 fishing loop]]). Cast, bite, hook, miss, reel-in, cooldown and land refusal all work, and the server logged catches at all five spots.
 - **M0 closed** (2026-11-22). The user skipped the phone check.
 
 ## Next step
-- M1 session 2, **Task 4**: playtest through the Studio MCP, per [[plans/2026-11-22 M1 S2 Fishing loop]]:
-  - cast with Space;
-  - "!" on the bite;
-  - hook, with the server's catch log;
-  - a miss;
-  - refusals (land, spam).
-- Then write the playtest note, update Status and commit.
+- Finish M1 session 2 with a fresh review of the whole session's changes and fix anything important it finds.
+- Then M1 **session 3**: the reel minigame (TrackBarSim, MinigameController, server replay), per [[plans/2026-11-22 M1 Vertical slice]]. Brainstorm and plan first.
 
 ## Open questions / blockers
-- 4 local commits aren't on GitHub yet: auto mode blocks Claude's `git push`, so run `git push` yourself.
+- **Space fishes instead of jumping on PC** (the M1 design binds Fish to Space). Keep it, or move Fish to another key? ([[playtests/2026-11-22 M1 S2 fishing loop]])
+- Local commits aren't on GitHub yet: auto mode blocks Claude's `git push`, so run `git push` yourself.
 - Studio shows two Rojo buttons on the Plugins toolbar (the one `rojo plugin install` added and another). Keep one so it's always clear which is connected.
 - Unused asset 85973780481219 (the first, backwards fish upload) can be archived in the Creator Dashboard.
 - The local `figma` MCP server is unauthenticated; remove it (`claude mcp remove figma`) or sign it in with /mcp.
