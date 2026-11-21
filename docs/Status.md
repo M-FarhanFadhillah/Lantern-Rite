@@ -23,7 +23,7 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 - Task 10: ponytail review of M0; all four findings fixed (facing guard, dead preview light, safer type-definition download, unused export retry)
 
 ## In progress
-- M1 brainstorm (started 2026-11-22 06:10 in session [[sessions/2026-11-21 2137 M0 foundations]]). Decided: M1 includes the free Rowboat with simple piloting ([[decisions/2026-11-22 M1 includes the Rowboat]]). Next: agree the build order for M1's systems, then write the M1 plan note.
+- M1 brainstorm (started 2026-11-22 06:10 in session [[sessions/2026-11-21 2137 M0 foundations]]). Decided: M1 includes the free Rowboat with simple piloting ([[decisions/2026-11-22 M1 includes the Rowboat]]). Build order decided: playable loop first. Draft design: [[plans/2026-11-22 M1 Vertical slice]] (a fresh builder reviews it, then the user approves).
 
 - **M0 closed** (2026-11-22). The user skipped the phone check.
 
