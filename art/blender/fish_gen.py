@@ -66,7 +66,6 @@ SCENE_NAME = "FishGen"
 MATERIAL_NAME = "MAT_PaletteAtlas"
 IMAGE_NAME = "FishGen_PaletteAtlas"
 CAMERA_NAME = "FishGen_Camera"
-LIGHT_NAME = "FishGen_Light"
 WORLD_NAME = "FishGen_World"
 
 TRI_MIN, TRI_MAX = 300, 1500  # PRD section 13 budget for one fish
@@ -565,7 +564,6 @@ def _prepare_scene(name):
         scene.collection.children.unlink(child)
     _purge(bpy.data.meshes, name)
     _purge(bpy.data.cameras, CAMERA_NAME)
-    _purge(bpy.data.lights, LIGHT_NAME)
     _purge(bpy.data.materials, MATERIAL_NAME)
     _purge(bpy.data.images, IMAGE_NAME)
     return scene
@@ -687,14 +685,7 @@ def _export_glb(scene, obj, path: Path):
     if "export_image_format" in props.keys():
         kwargs["export_image_format"] = pick("export_image_format", "AUTO")  # keeps the PNG a PNG
     with _override(scene, obj):
-        try:
-            result = bpy.ops.export_scene.gltf(**kwargs)
-        except TypeError as err:  # a dynamic enum rejected the guess; the message lists the options
-            fmt = _enum_pick(re.findall(r"'([^']+)'", str(err)), "GLB")
-            if fmt is None or fmt == kwargs["export_format"]:
-                raise
-            kwargs["export_format"] = fmt
-            result = bpy.ops.export_scene.gltf(**kwargs)
+        result = bpy.ops.export_scene.gltf(**kwargs)
     if "FINISHED" not in result or not path.exists():
         raise RuntimeError(f"glTF export failed ({result}) for {path}")
 
@@ -720,24 +711,17 @@ def _frame_camera(cam_obj, points):
 def _render_preview(scene, obj, path: Path):
     cam_data = bpy.data.cameras.new(CAMERA_NAME)
     cam = bpy.data.objects.new(CAMERA_NAME, cam_data)
-    light_types = [item.identifier for item in bpy.types.Light.bl_rna.properties["type"].enum_items]
-    light_data = bpy.data.lights.new(LIGHT_NAME, type=_enum_pick(light_types, "SUN") or light_types[0])
-    light = bpy.data.objects.new(LIGHT_NAME, light_data)
-    light.rotation_euler = (math.radians(50.0), 0.0, math.radians(35.0))
-    for ob in (cam, light):
-        scene.collection.objects.link(ob)
+    scene.collection.objects.link(cam)  # no light: Workbench uses its own Studio lighting
     _frame_camera(cam, [obj.matrix_world @ v.co for v in obj.data.vertices])
     scene.camera = cam
     scene.render.filepath = str(path)
     try:
         with _override(scene):
             bpy.ops.render.render(write_still=True, scene=scene.name)
-    finally:  # the camera and light are temporary
+    finally:  # the camera is temporary
         scene.camera = None
         bpy.data.objects.remove(cam, do_unlink=True)
-        bpy.data.objects.remove(light, do_unlink=True)
         bpy.data.cameras.remove(cam_data)
-        bpy.data.lights.remove(light_data)
     if not path.exists():
         raise RuntimeError(f"the preview render did not write {path}")
 
@@ -754,6 +738,8 @@ def build(spec_path, out_dir=None, preview_path=None) -> dict:
     # Geometry is pure Python, so a spec that breaks the budget fails before Blender data changes.
     parts, ring_s = build_parts(spec)
     verts, faces, groups, part_tris = assemble(parts, float(spec["length"]))
+    if verts[0].y >= 0.0:  # verts[0] is the body's nose tip
+        raise RuntimeError(f"{name}: the head faces +Y; it must face -Y so Roblox imports it facing LookVector")
     triangles = len(faces)
     if not TRI_MIN <= triangles <= TRI_MAX:
         raise ValueError(f"{name}: {triangles} triangles is outside the {TRI_MIN}-{TRI_MAX} fish budget")

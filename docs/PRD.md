@@ -460,8 +460,8 @@ Claude Code builds the art from scripts. That works best with a **stylized low-p
 
 1. **Style guide** in Figma: palette, rarity colours, polygon and texture budgets.
 2. **Blender generators** in `art/blender/`: Python (bpy) scripts with parameters. Examples: `fish_gen.py` (body profile, fins, eyes, pattern, colours), `boat_gen.py` (modular hull, cabin and gear sockets), `rock_gen.py`, `dock_gen.py`.
-3. **Iterate visually** through the Blender MCP server: Claude builds, takes viewport screenshots, and adjusts. Batch runs use headless `blender -b -P script.py -- --spec fish/kelp_snapper.json`.
-4. **Export** FBX or glTF with consistent naming (`FSH_KelpSnapper`, `BOT_Skiff_Hull`) and one fixed export scale. A Roblox stud is about 0.28 m, so choose a scale once and check it in Studio's 3D Importer on the first asset.
+3. **Iterate visually** through the Blender MCP server: Claude builds, takes viewport screenshots, and adjusts. Batch runs use headless Blender, which is the Steam build and is called by its full path: `& "E:\SteamLibrary\steamapps\common\Blender\blender.exe" -b -P art/blender/fish_gen.py -- --spec art/blender/specs/fish/kelp_snapper.json`. (see [[decisions/2026-11-22 Export fish as GLB modeled in studs]])
+4. **Export** GLB (glTF binary, texture embedded), modeled in studs: 1 Blender unit = 1 stud, no export scale factor. Orient every fish with its head toward Blender −Y, which Roblox's importer turns into the MeshPart's LookVector. Name assets `FSH_KelpSnapper`, `BOT_Skiff_Hull`. Confirmed in the M0 smoke test: the test fish imported at exactly its Blender size. (see [[decisions/2026-11-22 Export fish as GLB modeled in studs]])
 5. **Upload** through the Roblox Studio MCP's `open_cloud_invoke` tool, which calls the Open Cloud Assets API (`POST /assets/v1/assets`) and accepts .fbx, .gltf and .glb as Model assets. Files must sit in an approved upload folder (`art/blender/exports`, `art/figma`, `art/audio`). Claude polls the operation, checks the moderation state, and records each returned asset ID in `src/shared/Assets/AssetIds.luau` by hand. No API key is needed. Uploads are permanent on the account; only the Creator Dashboard can archive them. (see [[decisions/2026-11-21 Uploads go through the Studio MCP]])
 6. **Place and wire up** in Studio through the Roblox Studio MCP server (insert, inspect, playtest, screenshot).
 
@@ -619,7 +619,7 @@ You need a Windows or macOS computer, since Roblox Studio does not run on Linux.
 - [ ] Create the Figma UI file "Lantern Tide UI" (with the first UI work)
 - [ ] Create an Open Cloud API key and save it in `.env` (not needed, see [[decisions/2026-11-21 Uploads go through the Studio MCP]])
 - [x] Add this PRD as `docs/PRD.md` and write `CLAUDE.md` (section 18)
-- [ ] Run a smoke test: Claude creates a part through MCP, generates a test fish in Blender, uploads it and inserts it into Studio (M0 Part B)
+- [x] Run a smoke test: Claude creates a part through MCP, generates a test fish in Blender, uploads it and inserts it into Studio (done 2026-11-22: see [[playtests/2026-11-22 M0 fish smoke test]])
 
 Checklist status is recorded in [[decisions/2026-11-21 M0 toolchain and layout]].
 

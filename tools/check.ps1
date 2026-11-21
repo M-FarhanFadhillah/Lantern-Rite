@@ -18,9 +18,14 @@ $defs = ".luau-lsp/globalTypes.None.d.luau"
 $stamp = ".luau-lsp/version.txt"
 if (-not (Test-Path $defs) -or -not (Test-Path $stamp) -or ((Get-Content $stamp) -ne $version)) {
 	New-Item -ItemType Directory -Force .luau-lsp | Out-Null
-	Invoke-WebRequest -UseBasicParsing -OutFile $defs `
-		-Uri "https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/$version/scripts/globalTypes.None.d.luau"
-	Set-Content -Path $stamp -Value $version -Encoding ascii
+	try {
+		Invoke-WebRequest -UseBasicParsing -OutFile $defs -ErrorAction Stop `
+			-Uri "https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/$version/scripts/globalTypes.None.d.luau"
+		Set-Content -Path $stamp -Value $version -Encoding ascii  # only after a complete download
+	} catch {
+		Remove-Item $defs, $stamp -ErrorAction SilentlyContinue
+		Write-Host "Could not download the Roblox type definitions: $_"
+	}
 }
 
 rojo sourcemap default.project.json -o sourcemap.json
