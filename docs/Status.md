@@ -2,7 +2,7 @@
 
 Back to [[Home]]. Claude Code updates this note after every completed task.
 
-**Last updated:** 2026-11-22 06:32
+**Last updated:** 2026-11-22 06:34
 **Current milestone:** M1 Vertical slice ([[PRD#16. Milestones and roadmap]]). M0 Foundations closed 2026-11-22: gate passed on PC, phone check skipped by the user ([[decisions/2026-11-22 M0 closed without a phone check]])
 **Current plan:** [[plans/2026-11-22 M1 Vertical slice]] (approved 2026-11-22). M0's was [[plans/2026-11-21 M0 Foundations]]
 
@@ -27,11 +27,16 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 
 - **M1 session 2: the fishing loop** (cast, bite, hook). Design approved by the user; plan [[plans/2026-11-22 M1 S2 Fishing loop]].
   - Task 1 done: `net.zap`, generated into `src/server/Net.luau` and `src/client/Net.luau`.
-  - Next: Task 2 (FishingState, test first), Task 3 (FishingService, controllers, placeholder harbor), Task 4 (playtest).
+  - Task 2 done: `FishingTuning` and the pure `FishingState` (cast, bite, hook window, expiry, reel-in, landing), test first; Jest 39/39.
+  - Next: Task 3 (FishingService, controllers, placeholder harbor), then Task 4 (playtest).
 - **M0 closed** (2026-11-22). The user skipped the phone check.
 
 ## Next step
-- M1 session 2, **Task 2**: `FishingTuning` and the pure `FishingState`, test first in Studio Edit mode, per [[plans/2026-11-22 M1 S2 Fishing loop]]. Then Task 3 (FishingService, InputController, FishingController, placeholder harbor; delete `SmokeTestService`) and Task 4 (playtest).
+- M1 session 2, **Task 3**, per [[plans/2026-11-22 M1 S2 Fishing loop]]:
+  - FishingService: server state, one Heartbeat loop for bites and expiry, water check, spot zones, CatchRoll.
+  - InputController (one "Fish" action: Space, mouse, a screen button) and FishingController (power meter, bobber, line, "!", result text).
+  - The placeholder harbor in Studio; delete `SmokeTestService`.
+- Then Task 4: the playtest.
 
 ## Open questions / blockers
 - 4 local commits aren't on GitHub yet: auto mode blocks Claude's `git push`, so run `git push` yourself.
