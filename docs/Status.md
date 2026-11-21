@@ -16,11 +16,14 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 - Task 1: git repo (branch main) and the approved config fixes, first commit
 - Task 2: Rokit 1.2.0 with pinned Rojo 7.7.1, Wally, StyLua, Selene, Lune, Zap 0.6.29, luau-lsp; Wally packages (React, ProfileStore, Jest); `default.project.json` builds; Rojo Studio plugin installed
 
+- Task 3: `rojo serve` + Studio Rojo plugin connected; everything syncs
+- Task 4: `Loader` (shared) built test-first; Jest Lua runs in Studio Play through the MCP, 3/3 passing. Needs FFlagEnableLoadModule: re-run `tools/enable-jest-flag.ps1` after every Studio update, then restart Studio
+
 ## In progress
 - M0 Part A (repo, toolchain, loaders, Jest test) — session [[sessions/2026-11-21 2137 M0 foundations]]
 
 ## Next step
-- Task 3 of the plan: start `rojo serve` and have the user click Connect in Studio's Rojo panel
+- Task 5 of the plan: server/client entry scripts, `AssetIds.luau`, `SmokeTestService`, type check, playtest
 
 ## Open questions / blockers
 - Waiting for the GitHub repo URL (the user creates an empty private repo)

@@ -9,6 +9,7 @@ Packages/
 ServerPackages/
 DevPackages/
 sourcemap.json
+.luau-lsp/
 *.rbxl.lock
 *.rbxlx.lock
 build/
