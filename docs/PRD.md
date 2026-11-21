@@ -204,6 +204,7 @@ The boat is the player's base and their main progression track. Each player owns
 - Each boat hull is a grid, for example 6 by 4 for the first boat. Fish and equipment are polyomino shapes: a small fish is 1 by 1, a medium fish 2 by 1, a large fish 3 by 2, and eels are L-shapes. Shapes can rotate.
 - Rods, engines, lights and the ice box sit in the same grid. More gear means less room for fish.
 - Drag and drop with snapping. Mobile adds a rotate button and an Auto-pack button that tries to fit everything.
+- **Full hold:** a catch that doesn't fit waits 30 seconds while the player makes room or discards a fish; otherwise it's released. In M1 only fish take hold cells. (see [[decisions/2026-11-22 A full hold keeps a catch for 30 seconds]])
 - **Freshness:** fish lose 10% of their value per in-game day after the first day. An ice box slows this by half. Values are tunable.
 - A dock **Stash** (8 by 6, upgradable) keeps trophy fish and spare gear between trips.
 
@@ -640,7 +641,7 @@ flowchart LR
 
 The M0 gate loads the generated fish from its ID in `AssetIds.luau`, spawned by a Studio-only SmokeTestService. Catching it (cast, hook, reel) is M1's job. (see [[decisions/2026-11-21 M0 gate reworded]])
 
-M1 includes the free Rowboat with simple piloting; hull damage, boost and hazards come later (see [[decisions/2026-11-22 M1 includes the Rowboat]]).
+M1 includes the free Rowboat with simple piloting; hull damage, boost and hazards come later (see [[decisions/2026-11-22 M1 includes the Rowboat]]). M1's gate passes when at least 4 of the 5 testers rate "Would you play again tomorrow?" 4 or 5 out of 5 (see [[decisions/2026-11-22 M1 gate pass rule]]).
 
 **Rules for every milestone**
 
