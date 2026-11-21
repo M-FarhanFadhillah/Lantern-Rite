@@ -1,0 +1,45 @@
+{
+  "_comment": "PROVISIONAL shared palette for Lantern Tide's stylized low-poly art. It stays provisional until the Figma style guide defines the palette (PRD section 13, pipeline step 1); swatch names may survive that pass, hex values will likely change. Generators UV-map faces into the 512 px atlas built from this list (swatch i sits in column i % columns, row i // columns, row 0 at the top). Append new swatches at the end so existing indices, and the UVs of exported meshes, never shift. Unused atlas cells are filled with unused_hex (magenta) so a stray UV shows up immediately.",
+  "atlas": {
+    "size": 512,
+    "columns": 8,
+    "unused_hex": "#FF00FF"
+  },
+  "swatches": [
+    { "name": "deep_navy", "hex": "#1B2A49" },
+    { "name": "ocean_blue", "hex": "#1E5A8C" },
+    { "name": "tide_blue", "hex": "#2F86B8" },
+    { "name": "sky_blue", "hex": "#74C3E6" },
+    { "name": "deep_teal", "hex": "#156B70" },
+    { "name": "teal_blue", "hex": "#24799A" },
+    { "name": "reef_teal", "hex": "#2FA39A" },
+    { "name": "seafoam", "hex": "#93D9C8" },
+
+    { "name": "kelp_dark", "hex": "#2F5A35" },
+    { "name": "kelp_green", "hex": "#6DAA3C" },
+    { "name": "sea_moss", "hex": "#9BBF4A" },
+    { "name": "algae_lime", "hex": "#C9DA6E" },
+    { "name": "coral", "hex": "#F2735A" },
+    { "name": "coral_light", "hex": "#F7A285" },
+    { "name": "snapper_red", "hex": "#D2453F" },
+    { "name": "brick_rust", "hex": "#9E3F2E" },
+
+    { "name": "sand", "hex": "#E9CF98" },
+    { "name": "wet_sand", "hex": "#C8A46C" },
+    { "name": "driftwood", "hex": "#8E6B4B" },
+    { "name": "bark_brown", "hex": "#5B4030" },
+    { "name": "sun_yellow", "hex": "#F6CB45" },
+    { "name": "lantern_gold", "hex": "#F0A23A" },
+    { "name": "butter_cream", "hex": "#FBE9A8" },
+    { "name": "shell_pink", "hex": "#F2B8B5" },
+
+    { "name": "foam_white", "hex": "#F8F5EC" },
+    { "name": "belly_cream", "hex": "#EFE5CF" },
+    { "name": "shell_grey", "hex": "#B9B3A8" },
+    { "name": "stone_grey", "hex": "#7C7975" },
+    { "name": "slate", "hex": "#474C57" },
+    { "name": "ink_black", "hex": "#17151B" },
+    { "name": "dusk_violet", "hex": "#5D4C8C" },
+    { "name": "night_lilac", "hex": "#A08CCB" }
+  ]
+}
