@@ -5,7 +5,7 @@ tags: [plan, m1]
 
 Back to [[Status]] · Milestone: [[PRD#16. Milestones and roadmap]] · Decisions: [[decisions/2026-11-22 M1 includes the Rowboat]] · Previous: [[plans/2026-11-21 M0 Foundations]]
 
-Status: **draft for approval** (2026-11-22). Each session below gets its own brainstorm and implementation plan before any code (CLAUDE.md: one system per session).
+Status: **approved by the user, 2026-11-22**, after a builder check. Each session below gets its own brainstorm and implementation plan before any code (CLAUDE.md: one system per session).
 
 ## Why
 

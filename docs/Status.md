@@ -4,7 +4,7 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 
 **Last updated:** 2026-11-22 06:05
 **Current milestone:** M1 Vertical slice ([[PRD#16. Milestones and roadmap]]). M0 Foundations closed 2026-11-22: gate passed on PC, phone check skipped by the user ([[decisions/2026-11-22 M0 closed without a phone check]])
-**Current plan:** none yet for M1. M0's was [[plans/2026-11-21 M0 Foundations]]
+**Current plan:** [[plans/2026-11-22 M1 Vertical slice]] (approved 2026-11-22). M0's was [[plans/2026-11-21 M0 Foundations]]
 
 ## Done
 - PRD written and saved as [[PRD]]
@@ -23,7 +23,7 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 - Task 10: ponytail review of M0; all four findings fixed (facing guard, dead preview light, safer type-definition download, unused export retry)
 
 ## In progress
-- M1 brainstorm (started 2026-11-22 06:10 in session [[sessions/2026-11-21 2137 M0 foundations]]). Decided: M1 includes the free Rowboat with simple piloting ([[decisions/2026-11-22 M1 includes the Rowboat]]). Build order decided: playable loop first. Design [[plans/2026-11-22 M1 Vertical slice]] is builder-checked and updated (13 sessions: replayed reels, feel pass, 30-second pending catch, phone checks after sessions 5 and 6, gate rule 4 of 5 testers). Waiting for the user to approve it.
+- M1 brainstorm (started 2026-11-22 06:10 in session [[sessions/2026-11-21 2137 M0 foundations]]). Decided: M1 includes the free Rowboat with simple piloting ([[decisions/2026-11-22 M1 includes the Rowboat]]). Build order decided: playable loop first. Design [[plans/2026-11-22 M1 Vertical slice]] is builder-checked, updated (13 sessions) and **approved by the user**. Now: M1 session 1, Harbor fish data and CatchRoll. Its brainstorm is under way, and the user approves the 12 species' names and lore.
 
 - **M0 closed** (2026-11-22). The user skipped the phone check.
 
