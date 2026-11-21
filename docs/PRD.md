@@ -631,7 +631,7 @@ The large launch scope is reached through six gated milestones, with no fixed da
 
 ```mermaid
 flowchart LR
-  M0["M0 Foundations<br/>repo, tools, MCP, art test<br/><i>Gate: generated fish loads from its asset ID in a Studio playtest</i>"] --> M1["M1 Vertical slice<br/>Harbor, 12 fish, track-bar reel, sell, save, cargo grid<br/><i>Gate: 5 testers enjoy the first 10 min</i>"]
+  M0["M0 Foundations<br/>repo, tools, MCP, art test<br/><i>Gate: generated fish loads from its asset ID in a Studio playtest</i>"] --> M1["M1 Vertical slice<br/>Harbor, Rowboat, 12 fish, track-bar reel, sell, save, cargo grid<br/><i>Gate: 5 testers enjoy the first 10 min</i>"]
   M1 --> M2["M2 Core systems<br/>3 reel variants, day/night + panic, Reef, Marsh, bestiary<br/><i>Gate: night trips feel worth the risk</i>"]
   M2 --> M3["M3 Story and content<br/>Glasswater, Acts 1-2, quests, aberrant fish, mobile pass<br/><i>Gate: closed beta at 30 FPS on mid-range phone</i>"]
   M3 --> M4["M4 Social and money<br/>trading, events, boards, passes, odds, analytics<br/><i>Gate: compliance + exploit checklists pass</i>"]
@@ -639,6 +639,8 @@ flowchart LR
 ```
 
 The M0 gate loads the generated fish from its ID in `AssetIds.luau`, spawned by a Studio-only SmokeTestService. Catching it (cast, hook, reel) is M1's job. (see [[decisions/2026-11-21 M0 gate reworded]])
+
+M1 includes the free Rowboat with simple piloting; hull damage, boost and hazards come later (see [[decisions/2026-11-22 M1 includes the Rowboat]]).
 
 **Rules for every milestone**
 
