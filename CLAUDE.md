@@ -29,6 +29,16 @@ Rojo 7.7+ · Luau `--!strict` · Wally · Rokit · StyLua + Selene · Zap · Pro
 - blender-artist (opus, max effort): Blender generators and 3D exports.
 - All design and code work runs on Opus. Never hand game code to a cheaper model.
 
+## Commands (PowerShell, repo root)
+Rokit tools live in `~/.rokit/bin`; a shell opened before Rokit was installed needs `$env:Path = "$env:USERPROFILE\.rokit\bin;$env:Path"`.
+- Setup: `rokit install`, then `wally install`.
+- Sync: `rojo serve default.project.json` in a Terminal tab, then Studio → Plugins → Rojo → Connect. The Studio MCP `studio_id` changes whenever Studio restarts: call `list_roblox_studios` again.
+- Checks before every commit: `powershell -NoProfile -ExecutionPolicy Bypass -File tools\check.ps1` (StyLua, Selene, luau-lsp strict types). Fix formatting with `stylua src tests`.
+- Unit tests: Studio MCP `execute_luau`, datamodel **Edit**, never during Play: `return require(game.ServerStorage.Tests.RunTests:Clone())()`. Jest needs FFlagEnableLoadModule; after a Studio update run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\enable-jest-flag.ps1` and restart Studio.
+- Build check: `rojo build default.project.json -o build/LanternTide.rbxl`.
+- Blender headless: `& "E:\SteamLibrary\steamapps\common\Blender\blender.exe" -b -P <script> -- <args>`.
+- Commit with `git commit -F <message file>`: Windows PowerShell 5.1 breaks `-m` messages that contain double quotes.
+
 ## Notes
 docs/ is an Obsidian vault and the design source of truth. Use [[wikilinks]].
 After each playtest, add a dated note in docs/playtests/. Record design changes in docs/decisions/ and update docs/PRD.md to match.

@@ -21,13 +21,16 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 
 - Task 5: server/client entry scripts load through `Loader`; `AssetIds.luau` (empty); `SmokeTestService` (Studio only); playtest clean ([[playtests/2026-11-21 M0 loaders]]). Jest suite 4/4, run in **Edit mode**: `require(game.ServerStorage.Tests.RunTests:Clone())()`
 
+- Task 6: four decision notes and the PRD updated to match; `tools/check.ps1` (all pre-commit checks in one command); CLAUDE.md Commands section; private GitHub repo as remote `origin` (M-FarhanFadhillah/Lantern-Rite)
+- **M0 Part A complete.**
+
 ## In progress
-- M0 Part A (repo, toolchain, loaders, Jest test) — session [[sessions/2026-11-21 2137 M0 foundations]]
+- Nothing. Part A finished in session [[sessions/2026-11-21 2137 M0 foundations]].
 
 ## Next step
-- Task 6 of the plan: notes-keeper decision notes + PRD sync, CLAUDE.md Commands section, push to GitHub once the user gives the repo URL
+- M0 Part B, Task 7 of [[plans/2026-11-21 M0 Foundations]]: the blender-artist subagent writes `art/blender/fish_gen.py`, `art/blender/palette.json` and `art/blender/specs/fish/kelp_snapper.json`, builds the test fish in its own scene, saves a preview PNG to `art/blender/previews/`, exports `art/blender/exports/FSH_KelpSnapper.glb` (modeled in studs) and does one headless run. Then upload through the Studio MCP (Task 8) and playtest (Task 9).
+- Before starting: Studio open with Rojo connected (`rojo serve`), Blender open with the MCP add-on running.
 
 ## Open questions / blockers
-- Waiting for the GitHub repo URL (the user creates an empty private repo)
 - The local `figma` MCP server is unauthenticated; remove it (`claude mcp remove figma`) or sign it in with /mcp
 - See the open questions in [[PRD#17. Success metrics, risks and open questions]]
