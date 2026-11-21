@@ -19,11 +19,13 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 - Task 3: `rojo serve` + Studio Rojo plugin connected; everything syncs
 - Task 4: `Loader` (shared) built test-first; Jest Lua runs in Studio Play through the MCP, 3/3 passing. Needs FFlagEnableLoadModule: re-run `tools/enable-jest-flag.ps1` after every Studio update, then restart Studio
 
+- Task 5: server/client entry scripts load through `Loader`; `AssetIds.luau` (empty); `SmokeTestService` (Studio only); playtest clean ([[playtests/2026-11-21 M0 loaders]]). Jest suite 4/4, run in **Edit mode**: `require(game.ServerStorage.Tests.RunTests:Clone())()`
+
 ## In progress
 - M0 Part A (repo, toolchain, loaders, Jest test) — session [[sessions/2026-11-21 2137 M0 foundations]]
 
 ## Next step
-- Task 5 of the plan: server/client entry scripts, `AssetIds.luau`, `SmokeTestService`, type check, playtest
+- Task 6 of the plan: notes-keeper decision notes + PRD sync, CLAUDE.md Commands section, push to GitHub once the user gives the repo URL
 
 ## Open questions / blockers
 - Waiting for the GitHub repo URL (the user creates an empty private repo)

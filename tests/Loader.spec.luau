@@ -64,6 +64,27 @@ describe("Loader.load", function()
 		expect(log).toEqual({})
 	end)
 
+	it("rejects a non-function Init or Start before running anything", function()
+		local log: { string } = {}
+		local entries: { Loader.Entry } = {
+			{
+				name = "A",
+				module = {
+					Init = function()
+						table.insert(log, "A.Init")
+					end,
+				},
+			},
+			{ name = "B", module = { Start = true } },
+		}
+
+		local ok, err = pcall(Loader.load :: any, entries)
+
+		expect(ok).toBe(false)
+		expect((string.find(tostring(err), "B.Start must be a function", 1, true))).toBe(1)
+		expect(log).toEqual({})
+	end)
+
 	it("accepts modules with no Init or Start", function()
 		expect(function()
 			Loader.load({ { name = "Empty", module = {} } })

@@ -1,7 +1,10 @@
 --!strict
 -- Runs every *.spec module under ServerStorage.Tests with Jest Lua.
--- During a Studio playtest, from execute_luau (Server):
---   return require(game.ServerStorage.Tests.RunTests)()
+-- Run it in Edit mode (no playtest) from the Studio MCP's execute_luau (datamodel Edit):
+--   return require(game.ServerStorage.Tests.RunTests:Clone())()
+-- Edit mode because during Play the game's own scripts load the same modules in another
+-- Luau VM, and Jest then fails with "Attempt to migrate WeakObjectRef across VM boundary".
+-- :Clone() because the plugin VM caches require results for the whole Studio session.
 
 local ServerStorage = game:GetService("ServerStorage")
 
