@@ -14,12 +14,13 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 - M0 plan approved (2026-11-21): GLB export modeled in studs; M0 gate = the generated fish loads from its asset ID in a Studio playtest; private GitHub repo; config fixes from the review
 
 - Task 1: git repo (branch main) and the approved config fixes, first commit
+- Task 2: Rokit 1.2.0 with pinned Rojo 7.7.1, Wally, StyLua, Selene, Lune, Zap 0.6.29, luau-lsp; Wally packages (React, ProfileStore, Jest); `default.project.json` builds; Rojo Studio plugin installed
 
 ## In progress
 - M0 Part A (repo, toolchain, loaders, Jest test) — session [[sessions/2026-11-21 2137 M0 foundations]]
 
 ## Next step
-- Task 2 of the plan: install Rokit, pin the tools, add Wally packages and the Rojo project
+- Task 3 of the plan: start `rojo serve` and have the user click Connect in Studio's Rojo panel
 
 ## Open questions / blockers
 - Waiting for the GitHub repo URL (the user creates an empty private repo)
