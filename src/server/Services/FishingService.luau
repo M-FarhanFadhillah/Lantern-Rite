@@ -1,7 +1,8 @@
 --!strict
 -- Runs every player's fishing line on the server (PRD §4, §14). Clients send only aim, cast power,
--- the bite token and reel-in. This service picks the landing point, spot, fish, bite time and hook
--- result, with FishingState for the rules and CatchRoll for the fish.
+-- the bite token, reel-in and their reel input. This service picks the landing point, spot, fish,
+-- bite time and reel, and settles the reel by replaying that input, with FishingState for the
+-- rules, CatchRoll for the fish and TrackBarSim for the reel.
 
 local CollectionService = game:GetService("CollectionService")
 local HttpService = game:GetService("HttpService")
@@ -11,9 +12,12 @@ local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage.Shared
 local CatchRoll = require(Shared.Modules.CatchRoll)
+local FishData = require(Shared.Data.FishData)
 local FishingState = require(Shared.Modules.FishingState)
 local FishingTuning = require(Shared.Data.FishingTuning)
 local RateLimit = require(Shared.Modules.RateLimit)
+local RodData = require(Shared.Data.RodData)
+local TrackBarSim = require(Shared.Modules.TrackBarSim)
 local ZoneData = require(Shared.Data.ZoneData)
 local Net = require(script.Parent.Parent.Net)
 
@@ -98,7 +102,11 @@ local function onRequestCast(player: Player, power: number, direction: Vector3)
 		castPower = power,
 		rodId = FishingTuning.rodId,
 	}, rng)
-	FishingState.cast(line.state, now, HttpService:GenerateGUID(false), catch)
+	local reel: FishingState.Reel = {
+		seed = rng:NextInteger(0, 4294967295),
+		tuning = TrackBarSim.tuning(FishData.byId[catch.speciesId].difficulty, RodData[FishingTuning.rodId]),
+	}
+	FishingState.cast(line.state, now, HttpService:GenerateGUID(false), catch, reel)
 	Net.CastResult.Fire(player, "Ok", surface)
 end
 
@@ -107,14 +115,37 @@ local function onHook(player: Player, token: string)
 	if not line then
 		return
 	end
-	local result, catch = FishingState.hook(line.state, os.clock(), token)
-	if result == "Hooked" and catch then
-		print(`[Fishing] {player.Name} caught {catch.speciesId} {catch.weightKg} kg at {line.spotId}`)
-		Net.FishResult.Fire(player, { outcome = "Caught", speciesId = catch.speciesId, weightKg = catch.weightKg })
+	local result = FishingState.hook(line.state, os.clock(), token)
+	if result == "Hooked" then
+		print(`[Fishing] {player.Name} hooked {(line.state.catch :: CatchRoll.Catch).speciesId} at {line.spotId}`)
 	elseif result == "Missed" then
 		print(`[Fishing] {player.Name} hooked too late at {line.spotId}`)
 		Net.FishResult.Fire(player, { outcome = "Missed" })
 	end -- "Rejected": a stale or forged token changes nothing and gets no answer.
+end
+
+local function onReelResult(player: Player, token: string, toggles: { number }, claimed: TrackBarSim.Outcome)
+	local line = allowed(player)
+	if not line then
+		return
+	end
+	local verdict, catch, perfect = FishingState.reel(line.state, os.clock(), token, toggles, claimed)
+	if verdict == "Caught" and catch then
+		local tag = if perfect then " (Perfect)" else ""
+		print(`[Fishing] {player.Name} caught {catch.speciesId} {catch.weightKg} kg at {line.spotId}{tag}`)
+		Net.FishResult.Fire(player, {
+			outcome = "Caught",
+			speciesId = catch.speciesId,
+			weightKg = catch.weightKg,
+			perfect = perfect,
+		})
+	elseif verdict == "Escaped" then
+		print(`[Fishing] {player.Name} lost a fish at {line.spotId}`)
+		Net.FishResult.Fire(player, { outcome = "Escaped" })
+	elseif verdict == "Forged" then
+		warn(`[Fishing] {player.Name} sent a reel result the replay doesn't reproduce; the fish escapes`)
+		Net.FishResult.Fire(player, { outcome = "Escaped" })
+	end -- "Rejected": a stale token changes nothing and gets no answer.
 end
 
 local function onReelIn(player: Player)
@@ -124,15 +155,21 @@ local function onReelIn(player: Player)
 	end
 end
 
--- Bites and expired bites, checked every frame: no per-cast timers to cancel or outlive a player.
+-- Bites, unhooked bites and unanswered reels, checked every frame: no per-cast timers to cancel or
+-- outlive a player.
 local function step()
 	local now = os.clock()
 	for player, line in lines do
 		if FishingState.bite(line.state, now) then
-			Net.Bite.Fire(player, line.state.token :: string)
-		elseif FishingState.expire(line.state, now) then
-			print(`[Fishing] {player.Name} missed a bite at {line.spotId}`)
-			Net.FishResult.Fire(player, { outcome = "Missed" })
+			local reel = line.state.reel :: FishingState.Reel
+			Net.Bite.Fire(player, line.state.token :: string, reel.seed, reel.tuning)
+		else
+			local expiry: FishingState.Expiry? = FishingState.expire(line.state, now)
+			if expiry then
+				local what = if expiry == "Missed" then "missed a bite" else "never finished a reel"
+				print(`[Fishing] {player.Name} {what} at {line.spotId}`)
+				Net.FishResult.Fire(player, { outcome = expiry })
+			end
 		end
 	end
 end
@@ -160,6 +197,7 @@ function FishingService.Start()
 	Net.RequestCast.SetCallback(onRequestCast)
 	Net.Hook.SetCallback(onHook)
 	Net.ReelIn.SetCallback(onReelIn)
+	Net.ReelResult.SetCallback(onReelResult)
 	RunService.Heartbeat:Connect(step)
 end
 

@@ -135,6 +135,9 @@ if not RunService:IsRunning() then
 		RequestCast = table.freeze({
 			Fire = noop
 		}),
+		ReelResult = table.freeze({
+			Fire = noop
+		}),
 		ReelIn = table.freeze({
 			Fire = noop
 		}),
@@ -157,6 +160,13 @@ local remotes = ReplicatedStorage:WaitForChild("ZAP")
 local reliable = remotes:WaitForChild("ZAP_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected ZAP_RELIABLE to be a RemoteEvent")
 
+export type Tuning = ({
+	["barSize"]: (number),
+	["fishSpeed"]: (number),
+	["moveInterval"]: (number),
+	["gainRate"]: (number),
+	["drainRate"]: (number),
+})
 
 local function SendEvents()
 	if outgoing_used ~= 0 then
@@ -213,6 +223,11 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value["weightKg"] = nil
 			end
+			if bit32.btest(bool_1, 0b0000000001000000) then
+				value["perfect"] = bit32.btest(bool_1, 0b0000000010000000)
+			else
+				value["perfect"] = nil
+			end
 			if reliable_events[2] then
 				task.spawn(reliable_events[2], value)
 			else
@@ -251,15 +266,22 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				end
 			end
 		elseif id == 1 then -- Bite
-			local value
+			local value, value2, value3
 			local len_2 = buffer.readu8(incoming_buff, read(1))
 			assert(len_2 <= 160, "value is more than 160!")
 			value = buffer.readstring(incoming_buff, read(len_2), len_2)
 			assert(utf8.len(value) ~= nil, "value is not valid utf-8")
+			value2 = buffer.readu32(incoming_buff, read(4))
+			value3 = {  }
+			value3["barSize"] = buffer.readf64(incoming_buff, read(8))
+			value3["fishSpeed"] = buffer.readf64(incoming_buff, read(8))
+			value3["moveInterval"] = buffer.readf64(incoming_buff, read(8))
+			value3["gainRate"] = buffer.readf64(incoming_buff, read(8))
+			value3["drainRate"] = buffer.readf64(incoming_buff, read(8))
 			if reliable_events[1] then
-				task.spawn(reliable_events[1], value)
+				task.spawn(reliable_events[1], value, value2, value3)
 			else
-				table.insert(reliable_event_queue[1], value)
+				table.insert(reliable_event_queue[1], { value, value2, value3 })
 				if #reliable_event_queue[1] > 64 then
 					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for Bite. Did you forget to attach a listener?`)
 				end
@@ -290,16 +312,12 @@ local returns = {
 			buffer.writef32(outgoing_buff, outgoing_apos, direction.Z)
 		end,
 	},
-	ReelIn = {
-		Fire = function()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-		end,
-	},
-	Hook = {
-		Fire = function(token: (string))
+	ReelResult = {
+		Fire = function(token: (string), toggles: ({ (number) }), claimed: ("Caught" | "Escaped"))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			local bool_3 = 0
+			local bool_3_pos_1 = alloc(1)
 			local len_3 = #token
 			assert(len_3 <= 160, "value is more than 160!")
 			assert(utf8.len(token) ~= nil, "value is not valid utf-8")
@@ -307,6 +325,42 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, len_3)
 			alloc(len_3)
 			buffer.writestring(outgoing_buff, outgoing_apos, token, len_3)
+			local len_4 = #toggles
+			assert(len_4 <= 1000, "value is more than 1000!")
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_4)
+			for i_1 = 1, len_4 do
+				local val_1 = toggles[i_1]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, val_1)
+			end
+			if claimed == "Caught" then
+				bool_3 = bit32.bor(bool_3, 0b0000000000000001)
+			elseif claimed == "Escaped" then
+				local _
+			else
+				error("Invalid enumerator")
+			end
+			buffer.writeu8(outgoing_buff, bool_3_pos_1, bool_3)
+		end,
+	},
+	ReelIn = {
+		Fire = function()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+		end,
+	},
+	Hook = {
+		Fire = function(token: (string))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			local len_5 = #token
+			assert(len_5 <= 160, "value is more than 160!")
+			assert(utf8.len(token) ~= nil, "value is not valid utf-8")
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, len_5)
+			alloc(len_5)
+			buffer.writestring(outgoing_buff, outgoing_apos, token, len_5)
 		end,
 	},
 	FishResult = {
@@ -314,6 +368,7 @@ local returns = {
 			["outcome"]: ("Caught" | "Missed" | "Escaped" | "ReeledIn"),
 			["speciesId"]: ((string)?),
 			["weightKg"]: ((number)?),
+			["perfect"]: ((boolean)?),
 		})) -> ()): () -> ()
 			reliable_events[2] = Callback
 			for _, value in reliable_event_queue[2] do
@@ -338,10 +393,16 @@ local returns = {
 		end,
 	},
 	Bite = {
-		SetCallback = function(Callback: (token: (string)) -> ()): () -> ()
+		SetCallback = function(Callback: (token: (string), seed: (number), tuning: ({
+			["barSize"]: (number),
+			["fishSpeed"]: (number),
+			["moveInterval"]: (number),
+			["gainRate"]: (number),
+			["drainRate"]: (number),
+		})) -> ()): () -> ()
 			reliable_events[1] = Callback
 			for _, value in reliable_event_queue[1] do
-				task.spawn(Callback, value)
+				task.spawn(Callback, unpack(value))
 			end
 			reliable_event_queue[1] = {}
 			return function()

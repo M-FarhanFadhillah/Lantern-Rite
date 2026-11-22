@@ -5,6 +5,16 @@
 opt server_output = "src/server/Net.luau"
 opt client_output = "src/client/Net.luau"
 
+-- A fish's track-bar reel settings (TrackBarSim.Tuning), sent exactly so the client's run and the
+-- server's replay simulate the same reel.
+type Tuning = struct {
+	barSize: f64,
+	fishSpeed: f64,
+	moveInterval: f64,
+	gainRate: f64,
+	drainRate: f64,
+}
+
 event RequestCast = {
 	from: Client,
 	type: Reliable,
@@ -23,7 +33,15 @@ event Bite = {
 	from: Server,
 	type: Reliable,
 	call: SingleAsync,
-	data: (token: string.utf8(..40)),
+	data: (token: string.utf8(..40), seed: u32, tuning: Tuning),
+}
+
+-- The ticks at which the player's hold flipped during the reel, and the outcome the client saw.
+event ReelResult = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: (token: string.utf8(..40), toggles: u16[..1000], claimed: enum { "Caught", "Escaped" }),
 }
 
 event Hook = {
@@ -47,5 +65,6 @@ event FishResult = {
 		outcome: enum { "Caught", "Missed", "Escaped", "ReeledIn" },
 		speciesId: string.utf8(..40)?,
 		weightKg: f32?,
+		perfect: boolean?,
 	},
 }

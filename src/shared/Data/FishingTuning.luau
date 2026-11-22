@@ -9,6 +9,7 @@ return table.freeze({
 	hookWindowStep = 0.04, -- less time per difficulty step above 1
 	hookWindowMin = 0.45,
 	latencyAllowance = 0.35, -- added to every hook window for the round trip to the server
+	reelGrace = 5, -- a reel with no result this long past ReelTuning.maxSeconds escapes
 	chargeTime = 1.2, -- holding Fish this long reaches full power
 	maxCastDrop = 60, -- the water may lie this far below the caster
 	requestRate = 10, -- fishing requests a second each player may send on average (PRD §14)

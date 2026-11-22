@@ -1,23 +1,31 @@
 --!strict
--- One player's fishing line (PRD §4): cast, wait, bite, hook. Pure: the caller passes the time
--- (`now`, in seconds) and the catch CatchRoll already rolled, so FishingService owns the clock,
--- the remotes and the randomness. Until the reel (M1 session 3), a hooked fish counts as caught.
+-- One player's fishing line (PRD §4): cast, wait, bite, hook, reel. Pure: the caller passes the
+-- time (`now`, in seconds), the catch CatchRoll already rolled and the reel's seed and tuning, so
+-- FishingService owns the clock, the remotes and the randomness. The reel is settled by replaying
+-- the client's input with TrackBarSim (PRD §14).
 
 local Data = script.Parent.Parent.Data
 local CatchRoll = require(script.Parent.CatchRoll)
+local TrackBarSim = require(script.Parent.TrackBarSim)
 local FishData = require(Data.FishData)
 local FishingTuning = require(Data.FishingTuning)
+local ReelTuning = require(Data.ReelTuning)
 
-export type Phase = "Idle" | "Waiting" | "Biting"
+export type Phase = "Idle" | "Waiting" | "Biting" | "Reeling"
 export type HookResult = "Hooked" | "Missed" | "Rejected"
+export type ReelVerdict = "Caught" | "Escaped" | "Forged" | "Rejected"
+export type Expiry = "Missed" | "Escaped"
 export type Refusal = "Busy" | "Cooldown"
+export type Reel = { seed: number, tuning: TrackBarSim.Tuning }
 
 export type State = {
 	phase: Phase,
 	token: string?, -- this cast's token; the client learns it from the bite
-	catch: CatchRoll.Catch?, -- rolled at the cast; the client never sees it before the hook
+	catch: CatchRoll.Catch?, -- rolled at the cast; the client never sees it before the reel ends
+	reel: Reel?, -- the reel's seed and tuning, sent to the client with the bite
 	castAt: number,
 	deadline: number, -- the last moment a hook counts, once the fish bites
+	reelStart: number, -- when the hook landed and the reel began
 	readyAt: number, -- the earliest next cast
 }
 
@@ -27,10 +35,20 @@ local function reset(state: State)
 	state.phase = "Idle"
 	state.token = nil
 	state.catch = nil
+	state.reel = nil
 end
 
 function FishingState.new(): State
-	return { phase = "Idle", token = nil, catch = nil, castAt = 0, deadline = 0, readyAt = -math.huge }
+	return {
+		phase = "Idle",
+		token = nil,
+		catch = nil,
+		reel = nil,
+		castAt = 0,
+		deadline = 0,
+		reelStart = 0,
+		readyAt = -math.huge,
+	}
 end
 
 function FishingState.hookWindow(difficulty: number): number
@@ -49,7 +67,13 @@ function FishingState.canCast(state: State, now: number): (boolean, Refusal?)
 	return true, nil
 end
 
-function FishingState.cast(state: State, now: number, token: string, catch: CatchRoll.Catch): (boolean, Refusal?)
+function FishingState.cast(
+	state: State,
+	now: number,
+	token: string,
+	catch: CatchRoll.Catch,
+	reel: Reel
+): (boolean, Refusal?)
 	local ok: boolean, reason: Refusal? = FishingState.canCast(state, now)
 	if not ok then
 		return false, reason
@@ -57,6 +81,7 @@ function FishingState.cast(state: State, now: number, token: string, catch: Catc
 	state.phase = "Waiting"
 	state.token = token
 	state.catch = catch
+	state.reel = reel
 	state.castAt = now
 	state.readyAt = now + FishingTuning.castCooldown
 	return true, nil
@@ -75,31 +100,66 @@ function FishingState.bite(state: State, now: number): number?
 	return window
 end
 
--- A hook with this cast's token during the bite: "Hooked" (with the catch) up to the deadline,
--- "Missed" after it. Anything else is "Rejected" and changes nothing.
-function FishingState.hook(state: State, now: number, token: string): (HookResult, CatchRoll.Catch?)
+-- A hook with this cast's token during the bite: "Hooked" up to the deadline, which starts the
+-- reel, and "Missed" after it. Anything else is "Rejected" and changes nothing.
+function FishingState.hook(state: State, now: number, token: string): HookResult
 	if state.phase ~= "Biting" or token ~= state.token then
-		return "Rejected", nil
+		return "Rejected"
+	end
+	if now <= state.deadline then
+		state.phase = "Reeling"
+		state.reelStart = now
+		return "Hooked"
+	end
+	reset(state)
+	return "Missed"
+end
+
+-- Settles the reel from the client's toggles; the server's own replay decides. A claim the replay
+-- doesn't reproduce, toggles it can't use, or a result back sooner than the reel could take is
+-- "Forged", and the fish escapes. A wrong token or phase is "Rejected" and changes nothing.
+-- Returns the verdict, the catch when it's landed, and whether the catch is Perfect.
+function FishingState.reel(
+	state: State,
+	now: number,
+	token: string,
+	toggles: { number },
+	claimed: TrackBarSim.Outcome
+): (ReelVerdict, CatchRoll.Catch?, boolean)
+	local reel = state.reel
+	if state.phase ~= "Reeling" or token ~= state.token or not reel then
+		return "Rejected", nil, false
 	end
 	local catch = state.catch
-	local inTime = now <= state.deadline
+	local elapsed = now - state.reelStart
+	local result = TrackBarSim.replay(reel.tuning, reel.seed, toggles)
 	reset(state)
-	if inTime then
-		return "Hooked", catch
+	if
+		not result
+		or result.outcome ~= claimed
+		or elapsed < result.ticks / ReelTuning.tickRate - FishingTuning.latencyAllowance
+	then
+		return "Forged", nil, false
 	end
-	return "Missed", nil
+	if result.outcome == "Caught" then
+		return "Caught", catch, result.perfect
+	end
+	return "Escaped", nil, false
 end
 
--- Lets the fish go once the hook deadline has passed. True when it did.
-function FishingState.expire(state: State, now: number): boolean
+-- Ends a bite nobody hooked in time ("Missed") or a reel that never reported back ("Escaped").
+function FishingState.expire(state: State, now: number): Expiry?
 	if state.phase == "Biting" and now > state.deadline then
 		reset(state)
-		return true
+		return "Missed"
+	elseif state.phase == "Reeling" and now > state.reelStart + ReelTuning.maxSeconds + FishingTuning.reelGrace then
+		reset(state)
+		return "Escaped"
 	end
-	return false
+	return nil
 end
 
--- Pulls the line back in, before or during a bite. True when a line was out.
+-- Pulls the line back in at any point after the cast. True when a line was out.
 function FishingState.reelIn(state: State): boolean
 	if state.phase == "Idle" then
 		return false
