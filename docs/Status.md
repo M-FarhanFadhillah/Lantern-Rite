@@ -2,7 +2,7 @@
 
 Back to [[Home]]. Claude Code updates this note after every completed task.
 
-**Last updated:** 2026-11-22 07:10
+**Last updated:** 2026-11-22 07:28
 **Current milestone:** M1 Vertical slice ([[PRD#16. Milestones and roadmap]]). M0 Foundations closed 2026-11-22: gate passed on PC, phone check skipped by the user ([[decisions/2026-11-22 M0 closed without a phone check]])
 **Current plan:** [[plans/2026-11-22 M1 Vertical slice]] (approved 2026-11-22). M0's was [[plans/2026-11-21 M0 Foundations]]
 
@@ -42,8 +42,13 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
   - Jest 42/42.
 - **M0 closed** (2026-11-22). The user skipped the phone check.
 
+- **M1 session 3: the track-bar reel.** Design approved; plan [[plans/2026-11-22 M1 S3 Track-bar reel]].
+  - Perfect means keeping the fish in the bar ([[decisions/2026-11-22 Track-bar Perfect - keep the fish in the bar]]).
+  - Next: Task 1.
+
 ## Next step
-- M1 **session 3**: the reel minigame (TrackBarSim, MinigameController, server replay), per [[plans/2026-11-22 M1 Vertical slice]]. Brainstorm and plan first.
+- M1 session 3, **Task 1**: `ReelTuning` and `TrackBarSim`, test first, per [[plans/2026-11-22 M1 S3 Track-bar reel]].
+- Then Task 2 (reel phase, remotes, server replay), Task 3 (MinigameController overlay) and Task 4 (playtest).
 - Small follow-ups the session 2 review deferred:
   - a client timeout if the server never answers;
   - reel-in on respawn;

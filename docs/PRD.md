@@ -124,7 +124,7 @@ A catch has four phases: cast, wait, hook, reel. The server picks the fish when 
 
 **Rewards for skill**
 
-- A **Perfect** catch (no misses, no drain below 50%) adds a Perfect tag worth +15% sell value and a sparkle effect.
+- A **Perfect** catch adds a Perfect tag worth +15% sell value and a sparkle effect. On the track bar, Perfect means no misses: the fish marker never stays outside the catch bar for more than 0.25 s, after a 1 s settle-in ([[decisions/2026-11-22 Track-bar Perfect - keep the fish in the bar]]). For the other variants the rule stays "no misses, no drain below 50%" until each variant is built.
 - Each species tracks the player's perfect-catch count for bestiary mastery stars.
 
 **Feel requirements**
