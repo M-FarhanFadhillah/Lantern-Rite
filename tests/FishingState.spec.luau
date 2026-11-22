@@ -167,7 +167,7 @@ describe("FishingState.expire", function()
 	end)
 end)
 
--- Cast at 0 with this reel, bite at 5, hook at 5.1: the reel starts at 5.1.
+-- Cast at 0 with this reel, bite at 5, hook at 5.1. The reel's clock runs from the bite.
 local function reeling(reel: FishingState.Reel): FishingState.State
 	local state = FishingState.new()
 	FishingState.cast(state, 0, "t1", minnow(), reel)
@@ -214,6 +214,15 @@ describe("FishingState.reel", function()
 		expect((FishingState.reel(reeling(LANDED), 5.1 + 0.1, "t1", {}, "Caught"))).toBe("Forged")
 	end)
 
+	it("accepts an honest reel whose hook arrived late in the window", function()
+		local state = FishingState.new()
+		FishingState.cast(state, 0, "t1", minnow(), LANDED)
+		FishingState.bite(state, 5)
+		FishingState.hook(state, 5.9, "t1") -- lag: the hook lands near the end of the window
+		-- LANDED takes about 1 s; its result comes 1.1 s after the bite but only 0.2 s after the hook.
+		expect((FishingState.reel(state, 6.1, "t1", {}, "Caught"))).toBe("Caught")
+	end)
+
 	it("ignores a wrong token mid-reel", function()
 		local state = reeling(LANDED)
 		expect((FishingState.reel(state, 5.1 + 2, "nope", {}, "Caught"))).toBe("Rejected")
@@ -222,8 +231,8 @@ describe("FishingState.reel", function()
 
 	it("lets a reel with no result escape after 95 seconds", function()
 		local state = reeling(LANDED)
-		expect(FishingState.expire(state, 5.1 + 94.9)).toBeNil()
-		expect(FishingState.expire(state, 5.1 + 95.1)).toBe("Escaped")
+		expect(FishingState.expire(state, 5 + 94.9)).toBeNil()
+		expect(FishingState.expire(state, 5 + 95.1)).toBe("Escaped")
 		expect(state.phase).toBe("Idle")
 	end)
 end)

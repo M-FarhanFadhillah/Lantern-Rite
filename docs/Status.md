@@ -2,7 +2,7 @@
 
 Back to [[Home]]. Claude Code updates this note after every completed task.
 
-**Last updated:** 2026-11-22 07:28
+**Last updated:** 2026-11-22 12:16
 **Current milestone:** M1 Vertical slice ([[PRD#16. Milestones and roadmap]]). M0 Foundations closed 2026-11-22: gate passed on PC, phone check skipped by the user ([[decisions/2026-11-22 M0 closed without a phone check]])
 **Current plan:** [[plans/2026-11-22 M1 Vertical slice]] (approved 2026-11-22). M0's was [[plans/2026-11-21 M0 Foundations]]
 
@@ -51,10 +51,20 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
     - Bots landed two fish, and no input escaped.
     - The server's replay agreed with the client every time.
     - Neither bot got a Perfect, so check by hand whether it's too hard.
+  - **Session 3 done (2026-11-22).** A fresh review found nothing critical. Fixed, test first:
+    - an honest reel could be rejected when the hook lagged (it's now timed from the bite);
+    - the client's first frame could run ahead of real time;
+    - seeds are now drawn below 2^31.
+  - Jest 61/61.
 
 ## Next step
-- Finish M1 session 3 with a fresh review of the whole session's changes; fix anything important, test first.
-- Then M1 **session 4**: the cargo grid (Shapes, CargoGrid, CargoService, placeholder grid screen), per [[plans/2026-11-22 M1 Vertical slice]]. Brainstorm and plan first.
+- M1 **session 4**: the cargo grid (Shapes, CargoGrid, CargoService, placeholder grid screen), per [[plans/2026-11-22 M1 Vertical slice]]. Brainstorm and plan first.
+- Small follow-ups the session 3 review deferred:
+  - raise the toggle cap to `u16[..5400]` and drop `MAX_TOGGLES`;
+  - make the miss grace a whole number of ticks (a grace that isn't a multiple of 1/60 s counts no misses);
+  - tests: a miss just before the catch, a repeated ReelResult, the edge of the elapsed check;
+  - rename MinigameController's `start`/`stop` to `open`/`close`;
+  - a client Perfect event for session 8.
 - Small follow-ups the session 2 review deferred:
   - a client timeout if the server never answers;
   - reel-in on respawn;
@@ -64,6 +74,8 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
 
 ## Open questions / blockers
 - **Space fishes instead of jumping on PC** (the M1 design binds Fish to Space; it still swims and jumps in water). Keep it, or move Fish to another key? Decide before session 6: Space is also how players leave a boat seat. ([[playtests/2026-11-22 M1 S2 fishing loop]])
+- Is the track-bar Perfect too hard? Neither test bot got one ([[playtests/2026-11-22 M1 S3 track-bar reel]]). Try a few reels by hand.
+- Bots that compute a perfect input from the seed and tuning (both sent with the bite, per PRD §14) are accepted for M1. PRD §14's "plausible input log" needs a definition before launch.
 - PRD §4 says the fish is picked "when it bites", while PRD §14 and CatchRoll roll it at the cast. There is no difference in M1; it matters once weather or time of day can change during the wait.
 - Local commits aren't on GitHub yet: auto mode blocks Claude's `git push`, so run `git push` yourself.
 - Studio shows two Rojo buttons on the Plugins toolbar (the one `rojo plugin install` added and another). Keep one so it's always clear which is connected.

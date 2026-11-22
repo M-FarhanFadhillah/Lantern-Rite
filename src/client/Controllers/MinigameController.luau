@@ -14,7 +14,6 @@ local TrackBarSim = require(Shared.Modules.TrackBarSim)
 local InputController = require(script.Parent.InputController)
 local Net = require(script.Parent.Parent.Net)
 
-local DT = 1 / ReelTuning.tickRate
 local TRACK_HEIGHT = 300
 local MAX_TOGGLES = 999 -- net.zap carries up to 1000; past this the hold stays as it is
 
@@ -77,7 +76,7 @@ local sim: TrackBarSim.Sim? = nil
 local reelToken = ""
 local toggles: { number } = {}
 local holding = false
-local carry = 0 -- seconds of real time not yet stepped
+local startedAt = 0 -- os.clock() at the hook press
 
 local function draw(s: TrackBarSim.Sim)
 	bar.Size = UDim2.fromScale(1, s.tuning.barSize)
@@ -92,7 +91,7 @@ function MinigameController.start(token: string, seed: number, tuning: TrackBarS
 	reelToken = token
 	toggles = {}
 	holding = false
-	carry = 0
+	startedAt = os.clock()
 	draw(s)
 	hud.Enabled = true
 end
@@ -103,14 +102,14 @@ function MinigameController.stop()
 end
 
 function MinigameController.Start()
-	RunService.RenderStepped:Connect(function(dt)
+	RunService.RenderStepped:Connect(function()
 		local s = sim
 		if not s or s.outcome then
 			return
 		end
-		carry += dt
-		while carry >= DT and not s.outcome do
-			carry -= DT
+		-- Only the ticks due since the hook press, so the sim never runs ahead of real time.
+		local due = math.floor((os.clock() - startedAt) * ReelTuning.tickRate)
+		while s.tick < due and not s.outcome do
 			local want = InputController.fish:GetState() == true
 			if want ~= holding and #toggles < MAX_TOGGLES then
 				holding = want

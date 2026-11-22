@@ -103,7 +103,7 @@ local function onRequestCast(player: Player, power: number, direction: Vector3)
 		rodId = FishingTuning.rodId,
 	}, rng)
 	local reel: FishingState.Reel = {
-		seed = rng:NextInteger(0, 4294967295),
+		seed = rng:NextInteger(0, 2147483647), -- under 2^31, so no platform can read the seed differently
 		tuning = TrackBarSim.tuning(FishData.byId[catch.speciesId].difficulty, RodData[FishingTuning.rodId]),
 	}
 	FishingState.cast(line.state, now, HttpService:GenerateGUID(false), catch, reel)

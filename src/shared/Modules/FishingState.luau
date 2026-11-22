@@ -25,7 +25,7 @@ export type State = {
 	reel: Reel?, -- the reel's seed and tuning, sent to the client with the bite
 	castAt: number,
 	deadline: number, -- the last moment a hook counts, once the fish bites
-	reelStart: number, -- when the hook landed and the reel began
+	biteAt: number, -- when the server sent the bite; no honest reel can start before it
 	readyAt: number, -- the earliest next cast
 }
 
@@ -46,7 +46,7 @@ function FishingState.new(): State
 		reel = nil,
 		castAt = 0,
 		deadline = 0,
-		reelStart = 0,
+		biteAt = 0,
 		readyAt = -math.huge,
 	}
 end
@@ -96,6 +96,7 @@ function FishingState.bite(state: State, now: number): number?
 	end
 	local window = FishingState.hookWindow(FishData.byId[catch.speciesId].difficulty)
 	state.phase = "Biting"
+	state.biteAt = now
 	state.deadline = now + window + FishingTuning.latencyAllowance
 	return window
 end
@@ -108,7 +109,6 @@ function FishingState.hook(state: State, now: number, token: string): HookResult
 	end
 	if now <= state.deadline then
 		state.phase = "Reeling"
-		state.reelStart = now
 		return "Hooked"
 	end
 	reset(state)
@@ -131,7 +131,8 @@ function FishingState.reel(
 		return "Rejected", nil, false
 	end
 	local catch = state.catch
-	local elapsed = now - state.reelStart
+	-- Timed from the bite, not the hook's arrival: a lagged hook must not make an honest reel look fast.
+	local elapsed = now - state.biteAt
 	local result = TrackBarSim.replay(reel.tuning, reel.seed, toggles)
 	reset(state)
 	if
@@ -152,7 +153,7 @@ function FishingState.expire(state: State, now: number): Expiry?
 	if state.phase == "Biting" and now > state.deadline then
 		reset(state)
 		return "Missed"
-	elseif state.phase == "Reeling" and now > state.reelStart + ReelTuning.maxSeconds + FishingTuning.reelGrace then
+	elseif state.phase == "Reeling" and now > state.biteAt + ReelTuning.maxSeconds + FishingTuning.reelGrace then
 		reset(state)
 		return "Escaped"
 	end

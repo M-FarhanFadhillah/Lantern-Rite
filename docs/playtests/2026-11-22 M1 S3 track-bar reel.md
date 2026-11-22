@@ -43,5 +43,9 @@ Session: [[sessions/2026-11-21 2137 M0 foundations]] · Plan: [[plans/2026-11-22
 - A forged `ReelResult` sent over the network. FishingState's tests cover forged claims, bad toggles and too-fast results. The live client can't send one, because it records its own input.
 - A phone; holding with the screen button; a player who leaves or respawns mid-reel.
 
+## Follow-up: review fixes (same day, 12:16)
+- The reel is now timed from the server's bite instead of the hook's arrival, so lag on the hook can't make an honest reel look forged. The client also steps only the ticks due since the hook press.
+- A bot reel afterwards: "Caught a Tideline Herring! 0.20 kg". The server logged "hooked" then "caught", with no Forged warning.
+
 ## Decisions to make (link to [[decisions/README|Decisions]])
-- Is Perfect too hard on a 22% bar? Decide after playing a few reels by hand. One knob is a slightly larger base bar or a longer grace.
+- Is Perfect too hard on a 22% bar? Decide after playing a few reels by hand. The knobs are `barSizeBase` and `missGraceSeconds` in `ReelTuning`. Keep the grace a multiple of 1/60 s until the deferred whole-tick fix lands (see [[Status]]).
