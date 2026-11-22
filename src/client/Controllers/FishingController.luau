@@ -1,7 +1,8 @@
 --!strict
--- The fishing loop on the client (PRD §4): hold and release Fish to cast, press on the "!" to hook,
--- press while waiting to reel in. It sends only power, aim, the bite token and reel-in, and shows
--- what the server answers. Plain debug visuals until the final HUD (M1 session 10).
+-- The fishing loop on the client (PRD §4): hold and release Fish to cast, press on the "!" to hook
+-- and start the reel (MinigameController), press while waiting to reel in. It sends only power,
+-- aim, the bite token and reel-in, and shows what the server answers. Plain debug visuals until the
+-- final HUD (M1 session 10).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -10,11 +11,13 @@ local RunService = game:GetService("RunService")
 local Shared = ReplicatedStorage.Shared
 local FishData = require(Shared.Data.FishData)
 local FishingTuning = require(Shared.Data.FishingTuning)
+local TrackBarSim = require(Shared.Modules.TrackBarSim)
 local InputController = require(script.Parent.InputController)
+local MinigameController = require(script.Parent.MinigameController)
 local Net = require(script.Parent.Parent.Net)
 
--- Answering: a hook or reel-in is on its way to the server.
-type Phase = "Idle" | "Charging" | "Casting" | "Waiting" | "Biting" | "Answering"
+-- Answering: a reel-in is on its way to the server. Reeling: the reel overlay is up.
+type Phase = "Idle" | "Charging" | "Casting" | "Waiting" | "Biting" | "Reeling" | "Answering"
 
 local REFUSALS: { [string]: string } = {
 	NotWater = "Cast into the water.",
@@ -28,6 +31,7 @@ local player = Players.LocalPlayer
 local phase: Phase = "Idle"
 local chargeStart = 0
 local token: string? = nil
+local reel: { seed: number, tuning: TrackBarSim.Tuning }? = nil
 local bobber: Part? = nil
 
 local hud = Instance.new("ScreenGui")
@@ -147,9 +151,15 @@ local function onPressed()
 	elseif phase == "Waiting" then
 		phase = "Answering"
 		Net.ReelIn.Fire()
-	elseif phase == "Biting" and token then
-		phase = "Answering"
+	elseif phase == "Biting" and token and reel then
+		-- Start the reel at once (PRD §4: within 0.2 s); the server confirms or says Missed.
+		phase = "Reeling"
 		Net.Hook.Fire(token)
+		local sign = bobber and bobber:FindFirstChild("Bite")
+		if sign then
+			sign:Destroy()
+		end
+		MinigameController.start(token, reel.seed, reel.tuning)
 	end
 end
 
@@ -175,24 +185,28 @@ local function onCastResult(reason: string, landing: Vector3?)
 	end
 end
 
-local function onBite(biteToken: string)
+local function onBite(biteToken: string, seed: number, tuning: TrackBarSim.Tuning)
 	if phase == "Waiting" then
 		phase = "Biting"
 		token = biteToken
+		reel = { seed = seed, tuning = tuning }
 		showBite()
 	end
 end
 
-local function onFishResult(outcome: string, speciesId: string?, weightKg: number?)
+local function onFishResult(outcome: string, speciesId: string?, weightKg: number?, perfect: boolean?)
 	if phase ~= "Charging" then
 		phase = "Idle"
 	end
 	token = nil
+	reel = nil
 	clearBobber()
+	MinigameController.stop()
 	if outcome == "Caught" and speciesId then
 		local species = FishData.byId[speciesId]
 		local name = if species then species.displayName else speciesId
-		say(`Caught a {name}! {string.format("%.2f", weightKg or 0)} kg`)
+		local tag = if perfect then " Perfect!" else ""
+		say(`Caught a {name}! {string.format("%.2f", weightKg or 0)} kg{tag}`)
 	elseif outcome == "Missed" then
 		say("It got away.")
 	elseif outcome == "Escaped" then
@@ -208,7 +222,7 @@ function FishingController.Start()
 	Net.CastResult.SetCallback(onCastResult)
 	Net.Bite.SetCallback(onBite)
 	Net.FishResult.SetCallback(function(result)
-		onFishResult(result.outcome, result.speciesId, result.weightKg)
+		onFishResult(result.outcome, result.speciesId, result.weightKg, result.perfect)
 	end)
 	RunService.RenderStepped:Connect(function()
 		if phase == "Charging" then

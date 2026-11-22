@@ -9,6 +9,7 @@ local Controllers = script.Controllers
 
 local controllers: { Loader.Entry } = {
 	{ name = "InputController", module = require(Controllers.InputController) },
+	{ name = "MinigameController", module = require(Controllers.MinigameController) },
 	{ name = "FishingController", module = require(Controllers.FishingController) },
 }
 

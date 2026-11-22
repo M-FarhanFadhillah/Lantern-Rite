@@ -46,11 +46,16 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
   - Perfect means keeping the fish in the bar ([[decisions/2026-11-22 Track-bar Perfect - keep the fish in the bar]]).
   - Task 1 done: `ReelTuning` and `TrackBarSim` (deterministic, with exact replay), test first; Jest 52/52.
   - Task 2 done: the Reeling phase. The server replays the client's toggles and rejects forged or too-fast results. The Bite carries the seed and tuning, there's a new `ReelResult`, and FishResult has `perfect`. Jest 60/60.
-  - Next: Task 3. Until it's done, a hooked fish waits 95 s and escapes, because the client doesn't play the reel yet.
+  - Task 3 done: `MinigameController` (placeholder reel overlay). Hooking opens it at once, it plays the same TrackBarSim on the Fish input, and it sends the toggles.
+  - Next: Task 4 (playtest).
 
 ## Next step
-- M1 session 3, **Task 3**: `MinigameController` (placeholder reel overlay, the same TrackBarSim on the Fish input, sends the toggles), plus the FishingController changes, per [[plans/2026-11-22 M1 S3 Track-bar reel]].
-- Then Task 4 (playtest).
+- M1 session 3, **Task 4**: playtest through the Studio MCP, per [[plans/2026-11-22 M1 S3 Track-bar reel]]:
+  - a bot holds while the bar is below the fish, which should give a catch (Perfect if there are no misses);
+  - no input should give an escape;
+  - a forged ReelResult if the test can fire one;
+  - a screenshot of the overlay.
+- Then the playtest note, Status and commit, and a fresh review of the session.
 - Small follow-ups the session 2 review deferred:
   - a client timeout if the server never answers;
   - reel-in on respawn;
