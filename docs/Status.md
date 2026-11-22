@@ -47,15 +47,14 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
   - Task 1 done: `ReelTuning` and `TrackBarSim` (deterministic, with exact replay), test first; Jest 52/52.
   - Task 2 done: the Reeling phase. The server replays the client's toggles and rejects forged or too-fast results. The Bite carries the seed and tuning, there's a new `ReelResult`, and FishResult has `perfect`. Jest 60/60.
   - Task 3 done: `MinigameController` (placeholder reel overlay). Hooking opens it at once, it plays the same TrackBarSim on the Fish input, and it sends the toggles.
-  - Next: Task 4 (playtest).
+  - Task 4 done: playtest passed on PC ([[playtests/2026-11-22 M1 S3 track-bar reel]]).
+    - Bots landed two fish, and no input escaped.
+    - The server's replay agreed with the client every time.
+    - Neither bot got a Perfect, so check by hand whether it's too hard.
 
 ## Next step
-- M1 session 3, **Task 4**: playtest through the Studio MCP, per [[plans/2026-11-22 M1 S3 Track-bar reel]]:
-  - a bot holds while the bar is below the fish, which should give a catch (Perfect if there are no misses);
-  - no input should give an escape;
-  - a forged ReelResult if the test can fire one;
-  - a screenshot of the overlay.
-- Then the playtest note, Status and commit, and a fresh review of the session.
+- Finish M1 session 3 with a fresh review of the whole session's changes; fix anything important, test first.
+- Then M1 **session 4**: the cargo grid (Shapes, CargoGrid, CargoService, placeholder grid screen), per [[plans/2026-11-22 M1 Vertical slice]]. Brainstorm and plan first.
 - Small follow-ups the session 2 review deferred:
   - a client timeout if the server never answers;
   - reel-in on respawn;
