@@ -13,13 +13,14 @@ local Shared = ReplicatedStorage.Shared
 local CatchRoll = require(Shared.Modules.CatchRoll)
 local FishingState = require(Shared.Modules.FishingState)
 local FishingTuning = require(Shared.Data.FishingTuning)
+local RateLimit = require(Shared.Modules.RateLimit)
 local ZoneData = require(Shared.Data.ZoneData)
 local Net = require(script.Parent.Parent.Net)
 
 -- Invisible parts with this tag and a SpotId attribute mark the zone's fishing spots.
 local SPOT_TAG = "FishingSpot"
 
-type Line = { state: FishingState.State, spotId: string }
+type Line = { state: FishingState.State, spotId: string, budget: RateLimit.Bucket }
 
 local lines: { [Player]: Line } = {}
 local rng = Random.new()
@@ -53,8 +54,18 @@ local function waterAt(point: Vector3, character: Model): Vector3?
 	return nil
 end
 
-local function onRequestCast(player: Player, power: number, direction: Vector3)
+-- The player's line, if this request fits their rate limit (PRD §14). Requests over the limit are
+-- dropped without an answer.
+local function allowed(player: Player): Line?
 	local line = lines[player]
+	if line and RateLimit.take(line.budget, os.clock()) then
+		return line
+	end
+	return nil
+end
+
+local function onRequestCast(player: Player, power: number, direction: Vector3)
+	local line = allowed(player)
 	if not line then
 		return
 	end
@@ -92,7 +103,7 @@ local function onRequestCast(player: Player, power: number, direction: Vector3)
 end
 
 local function onHook(player: Player, token: string)
-	local line = lines[player]
+	local line = allowed(player)
 	if not line then
 		return
 	end
@@ -107,7 +118,7 @@ local function onHook(player: Player, token: string)
 end
 
 local function onReelIn(player: Player)
-	local line = lines[player]
+	local line = allowed(player)
 	if line and FishingState.reelIn(line.state) then
 		Net.FishResult.Fire(player, { outcome = "ReeledIn" })
 	end
@@ -128,7 +139,11 @@ end
 
 local function addPlayer(player: Player)
 	if not lines[player] then
-		lines[player] = { state = FishingState.new(), spotId = FishingTuning.defaultSpot }
+		lines[player] = {
+			state = FishingState.new(),
+			spotId = FishingTuning.defaultSpot,
+			budget = RateLimit.new(FishingTuning.requestRate, FishingTuning.requestBurst),
+		}
 	end
 end
 

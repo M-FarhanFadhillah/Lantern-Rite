@@ -53,5 +53,10 @@ The placeholder harbor in Edit mode, seen from the shore: rocks on the left, the
 - A player leaving mid-cast (single player). The service drops their state on PlayerRemoving.
 - Touch on a phone, and several players at once.
 
+## Follow-up: review fixes (same day, second playtest)
+- **Bug found by the review and reproduced:** a PC player who falls into the water can't get out. While swimming, 1.5 s of Space changed no state and didn't raise the character, because the Fish context sank Space; it cast a line from the water instead.
+- **Fixed:** the Fish context switches off while the character swims. The same test now cycles Jumping, Freefall and Swimming, the character reaches y 9.8 (above the pier deck), and no line is cast. Back on the pier, Space casts again (a line 28 studs out) with no jump.
+- Rate limits: every fishing remote now drops requests over 10 a second (bursts of 20). Normal fishing still works: a cast and hook gave "Caught a Plank Perch! 0.40 kg".
+
 ## Decisions to make (link to [[decisions/README|Decisions]])
 - **Space now fishes instead of jumping on PC**, because the approved M1 design binds Fish to Space. Keep that, or move Fish to another key so that Space jumps again? Touch players keep their jump button either way.

@@ -55,7 +55,7 @@ Night, dusk and dawn, and the panic meter; the timing-ring, tension and chained 
 | Phone checks | After session 5 (the playable loop) and session 6 (the Rowboat), a private publish so the user can play on their own phone, which becomes the performance target. If that isn't possible, touch is checked in Studio's Device Simulator and a mobile fix-up session goes in before the gate. Each publish needs the user's go-ahead at the time. | Claude's call (user had no preference) |
 | Gate pass rule | Each tester rates "Would you play again tomorrow?" from 1 to 5. The gate passes if at least 4 of the 5 answer 4 or 5. The §2 targets (first catch within 60 s, first sale and first upgrade within 10 min) are recorded per tester but don't fail the gate. Phone FPS is measured, not required (PRD §16 gates 30 FPS in M3). If the gate fails, a fix round follows before re-testing. | Claude's call (user had no preference) |
 | Placeholder UI | Plain debug screens during Phase 1; every final screen is designed in Figma first, then built in React Lua | CLAUDE.md |
-| Networking | Zap (`net.zap`, generated into `src/shared/Net/`); every remote checks types, range and rate | PRD §14 |
+| Networking | Zap (`net.zap`, generated into `src/server/Net.luau` and `src/client/Net.luau`, so server code stays off clients); every remote checks types, range and rate | PRD §14 |
 | Tests | Jest Lua for pure modules (CatchRoll, PriceCalc, CargoGrid, Shapes, SeededRng), run in Studio Edit mode | CLAUDE.md, M0 |
 | Art | Fish via `art/blender/fish_gen.py` (GLB in studs, head toward −Y); a new `boat_gen.py` for `BOT_Rowboat`; dock and prop generators; uploads through the Studio MCP | M0 decisions |
 

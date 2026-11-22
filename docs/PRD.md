@@ -521,19 +521,20 @@ src/
                      BoatService, TimeService, PanicService, QuestService, EconomyService,
                      MarketService, TradeService, EventService, BestiaryService,
                      MonetizationService, LeaderboardService, AnalyticsService
+    Net.luau         generated Zap code, server side (from net.zap at the repo root)
     init.server.luau  loads services in order
   client/
     Controllers/     InputController, FishingController, MinigameController,
                      CargoController, BoatController, PanicFXController,
                      LightingController, AudioController, TutorialController
     UI/              React Lua apps and components
+    Net.luau         generated Zap code, client side
     init.client.luau
   shared/
     Data/            FishData, ZoneData, RodData, BaitData, BoatData, QuestData,
                      ReelTuning, EconomyConfig, MonetizationConfig
     Modules/         CatchRoll, PriceCalc, CargoGrid, Shapes, Seeded RNG, Types
     Assets/          AssetIds.luau (filled in by hand after each MCP upload)
-    Net/             generated Zap code
 art/blender/         generators, specs/<kind>/*.json, previews/ (PNGs, committed), exports (git-ignored)
 art/figma/           exported UI PNGs
 art/audio/           audio files for upload

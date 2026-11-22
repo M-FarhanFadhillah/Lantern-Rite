@@ -11,6 +11,8 @@ return table.freeze({
 	latencyAllowance = 0.35, -- added to every hook window for the round trip to the server
 	chargeTime = 1.2, -- holding Fish this long reaches full power
 	maxCastDrop = 60, -- the water may lie this far below the caster
+	requestRate = 10, -- fishing requests a second each player may send on average (PRD §14)
+	requestBurst = 20, -- at once; a real player sends one or two per cast
 	-- M1 stand-ins until DataService gives each player a rod (session 5) and M2 adds zones.
 	zoneId = "DriftwoodHarbor",
 	rodId = "Driftwood",

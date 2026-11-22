@@ -2,7 +2,7 @@
 
 Back to [[Home]]. Claude Code updates this note after every completed task.
 
-**Last updated:** 2026-11-22 06:52
+**Last updated:** 2026-11-22 07:10
 **Current milestone:** M1 Vertical slice ([[PRD#16. Milestones and roadmap]]). M0 Foundations closed 2026-11-22: gate passed on PC, phone check skipped by the user ([[decisions/2026-11-22 M0 closed without a phone check]])
 **Current plan:** [[plans/2026-11-22 M1 Vertical slice]] (approved 2026-11-22). M0's was [[plans/2026-11-21 M0 Foundations]]
 
@@ -35,14 +35,25 @@ Back to [[Home]]. Claude Code updates this note after every completed task.
     - `SmokeTestService` deleted.
     - Placeholder harbor in `Workspace.PlaceholderHarbor` at x = 1300, saved as place version 18.
   - Task 4 done: playtest passed on PC ([[playtests/2026-11-22 M1 S2 fishing loop]]). Cast, bite, hook, miss, reel-in, cooldown and land refusal all work, and the server logged catches at all five spots.
+  - **Session 2 done (2026-11-22).** A fresh review found nothing critical. Fixed:
+    - rate limits on every fishing remote (`RateLimit`, tested);
+    - a PC soft-lock in the water (Space now swims and jumps while swimming);
+    - stale Net paths in the docs.
+  - Jest 42/42.
 - **M0 closed** (2026-11-22). The user skipped the phone check.
 
 ## Next step
-- Finish M1 session 2 with a fresh review of the whole session's changes and fix anything important it finds.
-- Then M1 **session 3**: the reel minigame (TrackBarSim, MinigameController, server replay), per [[plans/2026-11-22 M1 Vertical slice]]. Brainstorm and plan first.
+- M1 **session 3**: the reel minigame (TrackBarSim, MinigameController, server replay), per [[plans/2026-11-22 M1 Vertical slice]]. Brainstorm and plan first.
+- Small follow-ups the session 2 review deferred:
+  - a client timeout if the server never answers;
+  - reel-in on respawn;
+  - tests for `landing()` with an infinite aim and for `hook()` after `expire()`;
+  - send Ok only when `cast()` succeeds;
+  - pcall each line in the Heartbeat loop.
 
 ## Open questions / blockers
-- **Space fishes instead of jumping on PC** (the M1 design binds Fish to Space). Keep it, or move Fish to another key? ([[playtests/2026-11-22 M1 S2 fishing loop]])
+- **Space fishes instead of jumping on PC** (the M1 design binds Fish to Space; it still swims and jumps in water). Keep it, or move Fish to another key? Decide before session 6: Space is also how players leave a boat seat. ([[playtests/2026-11-22 M1 S2 fishing loop]])
+- PRD §4 says the fish is picked "when it bites", while PRD §14 and CatchRoll roll it at the cast. There is no difference in M1; it matters once weather or time of day can change during the wait.
 - Local commits aren't on GitHub yet: auto mode blocks Claude's `git push`, so run `git push` yourself.
 - Studio shows two Rojo buttons on the Plugins toolbar (the one `rojo plugin install` added and another). Keep one so it's always clear which is connected.
 - Unused asset 85973780481219 (the first, backwards fish upload) can be archived in the Creator Dashboard.

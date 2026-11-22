@@ -1,7 +1,8 @@
 --!strict
 -- The one gameplay input, "Fish" (PRD §4): Space or the left mouse button, or a screen button for
 -- touch. Its context outranks and sinks the default PlayerScripts contexts, so Space fishes
--- instead of jumping. The button is a plain placeholder until the final HUD (M1 session 10).
+-- instead of jumping, except while swimming. The button is a plain placeholder until the final HUD
+-- (M1 session 10).
 
 local Players = game:GetService("Players")
 
@@ -44,5 +45,18 @@ touch.Parent = fish
 
 gui.Parent = player:WaitForChild("PlayerGui")
 context.Parent = player:WaitForChild("PlayerScripts")
+
+-- In the water Space must swim and jump, or a PC player who falls in can't climb back out.
+local function watch(character: Model)
+	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
+	context.Enabled = true
+	humanoid.StateChanged:Connect(function(_, new)
+		context.Enabled = new ~= Enum.HumanoidStateType.Swimming
+	end)
+end
+player.CharacterAdded:Connect(watch)
+if player.Character then
+	task.spawn(watch, player.Character)
+end
 
 return table.freeze({ fish = fish })
